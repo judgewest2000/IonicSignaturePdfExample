@@ -17,45 +17,63 @@ export class HomePage {
   constructor(public navCtrl: NavController, private modalController: ModalController) {
   }
 
-  async getSignature(){
+  private async getSignature() {
     const signature = await this.modalCreate<string>('SignatureCapturePage');
-    this.signature=signature;
-    this.generatePdf();
+    return signature;
   }
 
-  signature='';
+  async generatePdf() {
+    const signature = await this.getSignature();
 
-  generatePdf(){
     let docDefinition = {
       content: [
         'paragraph 1',
         'paragraph 2',
         {
-	        image: this.signature
-		    },
+          image: signature
+        },
       ]
     };
 
-    pdfMake.createPdf(docDefinition).download('optionalName.pdf');
+    var pdf = pdfMake.createPdf(docDefinition);
+
+    var dataUrl = await this.GetDataUrl(pdf);
+
+    alert(dataUrl);
   }
+
+  private GetDataUrl(pdf) {
+    return new Promise((resolve, reject) => {
+      pdf.getDataUrl(dataUrl => {
+        resolve(dataUrl);
+      });
+    });
+  }
+
+
+
+
+
+
+
 
 
   private modalCreate<T>(modalName: string): Promise<T> {
     return new Promise((resolve, reject) => {
-        let modal: Modal;
+      let modal: Modal;
 
-        const params: ModalCreateNewParams<T> = {
-            callback: (entity, success) => {
-                modal.dismiss();
-                if (success) {
-                    resolve(entity);
-                }
-            }
+      const params: ModalCreateNewParams<T> = {
+        callback: (entity, success) => {
+          modal.dismiss();
+          if (success) {
+            resolve(entity);
+          }
         }
+      }
 
-        modal = this.modalController.create(modalName, { params: params });
-        modal.present();
+      modal = this.modalController.create(modalName, { params: params });
+      modal.present();
     });
-}
+  }
 
 }
