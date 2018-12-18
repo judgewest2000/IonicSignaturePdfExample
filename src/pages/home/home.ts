@@ -35,9 +35,10 @@ export class HomePage {
       ]
     };
 
-    var pdf = pdfMake.createPdf(docDefinition);
 
-    var dataUrl = await this.GetDataUrl(pdf);
+    const pdf = pdfMake.createPdf(docDefinition);
+
+    const dataUrl = await this.GetDataUrl(pdf);
 
     alert(dataUrl);
   }
